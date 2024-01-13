@@ -67,59 +67,54 @@ const images = [
 const galleryContainer = document.getElementById("gallery-container");
 
 const fragment = document.createDocumentFragment();
-    
-
-    images.forEach((imageData, index) => {
   
-        const galleryItem = document.createElement("li");
-        galleryItem.classList.add("gallery-item");
-        galleryItem.id = "gallery-item-" + (index + 1);
+images.forEach((imageData, index) => {
+  
+  const galleryItem = document.createElement("li");
+  galleryItem.classList.add("gallery-item");
        
-    
+  const galleryLink = document.createElement("a");
+  galleryLink.classList.add("gallery-link");
+  galleryLink.href = imageData.original;
 
+  galleryLink.addEventListener('click', function(event) {
+     event.preventDefault();
+           
+     instance = basicLightbox.create(`
+    <img src="${imageData.original}" alt="${imageData.description}">
+`, {
 
-        const galleryLink = document.createElement("a");
-        galleryLink.classList.add("gallery-link");
-        galleryLink.href = imageData.original;
-
-         galleryLink.addEventListener('click', function(event) {
-    event.preventDefault();
+  onShow: () => {
+     document.addEventListener('keydown', handleKeyPress);
+     },
+  onClose: () => {
+      document.removeEventListener('keydown', handleKeyPress);
+     }
+     });
+    instance.show()
       });
 
 
-        const imageElement = document.createElement("img");
-        imageElement.classList.add("gallery-image");
-        imageElement.src = imageData.preview;
-        imageElement.alt = imageData.description;
-        imageElement.dataset.source = imageData.original;
+  const imageElement = document.createElement("img");
+  imageElement.classList.add("gallery-image");
+  imageElement.src = imageData.preview;
+  imageElement.alt = imageData.description;
+  imageElement.dataset.source = imageData.original;
 
-       
-
-
-        galleryLink.appendChild(imageElement);
-        galleryItem.appendChild(galleryLink);
-        fragment.appendChild(galleryItem);
+  galleryLink.appendChild(imageElement);
+  galleryItem.appendChild(galleryLink);
+  fragment.appendChild(galleryItem);
     });
 
 galleryContainer.appendChild(fragment);
-
-
-
-
-galleryContainer.addEventListener('click', e => {
-    if (e.target === e.currentTarget) return;
-
-    const liElem = e.target.closest('li');
-    const id = +liElem.dataset.id;
-    console.log(id);
-
-
-const instance = basicLightbox.create(`
-    <img src="https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg" width="800" height="600">
-`)
-
-    instance.show()
     
-    });
+function handleKeyPress (event) {
+  if (event.key === 'Escape') {
+    instance.close();
+  }
+};
+
+
+
     
 
